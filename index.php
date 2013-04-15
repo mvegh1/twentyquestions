@@ -1,20 +1,34 @@
 <?php
 require_once('/srv/www/difractal.com/public_html/template.php');
-echo "DEBUG: -- CURRENT GUESS: " . $_SESSION['20QGUESS'];
 
-if(!isset($_SESSION['20QNEXTQ'])) {
+if( !isset($_SESSION['20Q-QUESTIONS']) ) {
+   $_SESSION['20Q-QUESTIONS'] =  array();
+   $_SESSION['20Q-PRIMARYQUESTIONS'] =  array();
+}
 
-   $dbcid = new mysqli(..........);  
-	 $sql = "SELECT * FROM twenty_questions GROUP BY question ORDER BY RAND()";
+function GetNextPrimaryQuestion() {
+	 $asked = "'" . join("', '", array_keys($_SESSION['20Q-PRIMARYQUESTIONS'])) . "'";
+  	 $dbcid = new mysqli(..............);
+	 $sql = "SELECT * FROM twenty_questions WHERE priority = 1 AND question NOT IN ($asked) LIMIT 0,1";
 	 $result = mysqli_query($dbcid,$sql);
 	 $row = mysqli_fetch_assoc($result);
-	 $_SESSION['20QNEXTQ'] = $row['question']; 
+	 $q = $row['question'];
+	 $cnt = count($_SESSION['20Q-PRIMARYQUESTIONS']);
+	 $_SESSION['20Q-PRIMARYQUESTIONS'][$q] = true;
+	 return $q;
+
 }
+if(!isset($_SESSION['20QNEXTQ'])) {
+
+	 $_SESSION['20QNEXTQ'] = GetNextPrimaryQuestion();
+
+}
+echo "DEBUG: -- CURRENT GUESS: " . $_SESSION['20QGUESS'];
 
 ?>
 
 
-
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <div>
 		   20 questions!
 		   <form action = 'process.php' method = 'POST'>
