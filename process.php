@@ -5,7 +5,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 }
   if( isset($_POST['question']) && isset($_POST['answer']) && count($_SESSION['20Q-QUESTIONS']) < 20) {
 
-	 $dbcid = new mysqli("localhost" , "root", "nDBtMa3SuC6vQqdC", "difractal");
+	 $dbcid = new mysqli(..........);
 	 $q = $dbcid->real_escape_string($_POST['question']);
 	 $a = $dbcid->real_escape_string($_POST['answer']);
 	 $_SESSION['20Q-QUESTIONS'][$q] = $a;
@@ -151,7 +151,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
   else if(isset($_POST['idea'])) {
     $idea = $dbcid->real_escape_string($_POST['idea']);
 
-  	 $dbcid = new mysqli("localhost" , "root", "nDBtMa3SuC6vQqdC", "difractal");
+  	 $dbcid = new mysqli(...............);
 	 
 	 foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
 	 
