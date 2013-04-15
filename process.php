@@ -3,7 +3,7 @@ session_start();
 
   if( isset($_POST['question']) && isset($_POST['answer']) && count($_SESSION['20Q-QUESTIONS']) < 20) {
 
-	 $dbcid = new mysqli("localhost" , "root", "d9ded1aa-124b-4ced-92f7-3f5d9483ddf6", "difractal");	
+	 $dbcid = new mysqli(................);	
 	 $q = $dbcid->real_escape_string($_POST['question']);
 	 $a = $dbcid->real_escape_string($_POST['answer']);
 	 $_SESSION['20Q-QUESTIONS'][$q] = $a;
@@ -177,7 +177,7 @@ session_start();
   else if(isset($_POST['idea'])) {
 
 
-  	 $dbcid = new mysqli("localhost" , "root", "d9ded1aa-124b-4ced-92f7-3f5d9483ddf6", "difractal");
+  	 $dbcid = new mysqli(................);
 	     $idea = $dbcid->real_escape_string($_POST['idea']);
 	 
 	 foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
@@ -214,7 +214,7 @@ echo "Hello world!";
 		
 function GetGuesses2() {
 
-  	 $dbcid = new mysqli(..........);
+  	 $dbcid = new mysqli(................);
 	 $sql = "SELECT * FROM twenty_questions as t WHERE";
 	 $cnt = count($_SESSION['20Q-QUESTIONS']);
 	 $iter = 0;
@@ -238,7 +238,7 @@ function GetGuesses2() {
 
 function GetNextPrimaryQuestion() {
 	 $asked = "'" . join("', '", array_keys($_SESSION['20Q-PRIMARYQUESTIONS'])) . "'";
-  	 $dbcid = new mysqli(............);
+  	 $dbcid = new mysqli(................);
 	 $sql = "SELECT * FROM twenty_questions WHERE priority = 1 AND question NOT IN ($asked) LIMIT 0,1";
 	 $result = mysqli_query($dbcid,$sql);
 	 $row = mysqli_fetch_assoc($result);
