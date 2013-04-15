@@ -1,6 +1,4 @@
 <?php
-require_once('template.php');
-
 if( !isset($_SESSION['20Q-QUESTIONS']) ) {
    $_SESSION['20Q-QUESTIONS'] =  array();
    $_SESSION['20Q-PRIMARYQUESTIONS'] =  array();
