@@ -1,0 +1,22 @@
+<?php
+function ConnectToDB() {
+	/**
+	* Replace the following variables accordingly, then rename this file
+	* to db.inc.php
+	*/
+	$hostname="localhost";
+	$dbname="thedb";
+	$dbuser="theuser";
+	$dbpwd="thepassword";
+	
+	$dbcid = mysqli_connect($hostname, $dbuser, $dbpwd);
+	if (!$dbcid) {
+		die("ERROR #" . mysqli_errno($dbcid) .": " . mysqli_error($dbcid) . "<br />");
+	}
+	
+	mysqli_select_db($dbcid, $dbname) 
+		or die("ERROR #" . mysqli_errno($dbcid) .": " . mysqli_error($dbcid) . "<br />");
+		
+	return $dbcid;
+}
+?>
