@@ -1,19 +1,19 @@
 <?php
 session_start();
-if( !isset($_SESSION['questions']) ) {
-   $_SESSION['questions'] =  array();
+if( !isset($_SESSION['20Q-QUESTIONS']) ) {
+   $_SESSION['20Q-QUESTIONS'] =  array();
 }
-  if( isset($_POST['question']) && isset($_POST['answer']) && count($_SESSION['questions']) < 20) {
+  if( isset($_POST['question']) && isset($_POST['answer']) && count($_SESSION['20Q-QUESTIONS']) < 20) {
 
 	 $dbcid = new mysqli("localhost" , "root", "nDBtMa3SuC6vQqdC", "difractal");
 	 $q = $dbcid->real_escape_string($_POST['question']);
 	 $a = $dbcid->real_escape_string($_POST['answer']);
-	 $_SESSION['questions'][$q] = $a;
+	 $_SESSION['20Q-QUESTIONS'][$q] = $a;
 	 $sql = "SELECT * FROM twenty_questions as t WHERE";
-	 $cnt = count($_SESSION['questions']);
+	 $cnt = count($_SESSION['20Q-QUESTIONS']);
 	 $iter = 0;
 
-	foreach($_SESSION['questions'] as $key => $value) {
+	foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
       $sql .= " guess IN (SELECT guess FROM twenty_questions WHERE question = '$key' AND answer = '$value') ";
 	  $iter++;
 	  if($iter < $cnt) {
@@ -46,7 +46,7 @@ if( !isset($_SESSION['questions']) ) {
 			exit;
 		} else {
 		    
-			$keys = "'" . join("', '", array_keys($_SESSION['questions'])) . "'";
+			$keys = "'" . join("', '", array_keys($_SESSION['20Q-QUESTIONS'])) . "'";
 			$guesses = "'" . join("', '", $guesses) . "'";
 			 //Grab a question from possible guesses that hasn't been asked yet
 			 $sql = "SELECT * FROM twenty_questions WHERE guess IN ($guesses) AND question NOT IN ($keys) ORDER BY RAND()";
@@ -54,7 +54,7 @@ if( !isset($_SESSION['questions']) ) {
 			 $num = mysqli_num_rows($result);
 			 //No questions in database. Grab any unasked question now 
 			 if($num == 0) {
-			    $keys = "'" . join("', '", array_keys($_SESSION['questions'])) . "'";
+			    $keys = "'" . join("', '", array_keys($_SESSION['20Q-QUESTIONS'])) . "'";
 				 $sql = "SELECT * FROM twenty_questions WHERE question NOT IN ($keys) ORDER BY RAND()";
 				 echo $sql;
 				 $result = mysqli_query($dbcid,$sql);
@@ -96,7 +96,7 @@ if( !isset($_SESSION['questions']) ) {
 			exit;
 		} else {
 		    
-			$keys = "'" . join("', '", array_keys($_SESSION['questions'])) . "'";
+			$keys = "'" . join("', '", array_keys($_SESSION['20Q-QUESTIONS'])) . "'";
 			$guesses = "'" . join("', '", $guesses) . "'";
 			 //Grab a question from possible guesses that hasn't been asked yet
 			 $sql = "SELECT * FROM twenty_questions WHERE guess IN ($guesses) AND question NOT IN ($keys) ORDER BY RAND()";
@@ -104,7 +104,7 @@ if( !isset($_SESSION['questions']) ) {
 			 $num = mysqli_num_rows($result);
 			 //No questions in database. Grab any unasked question now 
 			 if($num == 0) {
-			    $keys = "'" . join("', '", array_keys($_SESSION['questions'])) . "'";
+			    $keys = "'" . join("', '", array_keys($_SESSION['20Q-QUESTIONS'])) . "'";
 				 $sql = "SELECT * FROM twenty_questions WHERE question NOT IN ($keys) ORDER BY RAND()";
 				 echo $sql;
 				 $result = mysqli_query($dbcid,$sql);
@@ -153,7 +153,7 @@ if( !isset($_SESSION['questions']) ) {
 
   	 $dbcid = new mysqli("localhost" , "root", "nDBtMa3SuC6vQqdC", "difractal");
 	 
-	 foreach($_SESSION['questions'] as $key => $value) {
+	 foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
 	 
 	    $sql = "INSERT INTO twenty_questions (question,answer,guess) VALUES ('$key' , '$value' , '$idea')";
 		$result = mysqli_query($dbcid,$sql);
@@ -165,7 +165,7 @@ if( !isset($_SESSION['questions']) ) {
 	  $result = mysqli_query($dbcid,$sql);
     }
     unset($_SESSION['20QGAMEOVER']);	
-    unset($_SESSION['questions']);	
+    unset($_SESSION['20Q-QUESTIONS']);	
 	unset($_SESSION['20QNEXTQ']);	
 	unset($_SESSION['20QGUESS']);	
 	unset($_SESSION['20QCONFIRMGUESS']);	
@@ -176,7 +176,7 @@ if( !isset($_SESSION['questions']) ) {
 
 echo "Hello world!";
     unset($_SESSION['20QGAMEOVER']);	
-    unset($_SESSION['questions']);	
+    unset($_SESSION['20Q-QUESTIONS']);	
 	unset($_SESSION['20QNEXTQ']);	
 	unset($_SESSION['20QGUESS']);	
 	unset($_SESSION['20QCONFIRMGUESS']);	
