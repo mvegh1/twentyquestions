@@ -1,14 +1,21 @@
 <?php
 session_start();
-if( !isset($_SESSION['20Q-QUESTIONS']) ) {
-   $_SESSION['20Q-QUESTIONS'] =  array();
-}
+
   if( isset($_POST['question']) && isset($_POST['answer']) && count($_SESSION['20Q-QUESTIONS']) < 20) {
 
-	 $dbcid = new mysqli(.................);
+	 $dbcid = new mysqli("localhost" , "root", "d9ded1aa-124b-4ced-92f7-3f5d9483ddf6", "difractal");	
 	 $q = $dbcid->real_escape_string($_POST['question']);
 	 $a = $dbcid->real_escape_string($_POST['answer']);
 	 $_SESSION['20Q-QUESTIONS'][$q] = $a;
+	 $primarycnt = count($_SESSION['20Q-PRIMARYQUESTIONS']);
+	 //Ask all 5 primary questions first before guessing
+	 if($primarycnt < 5) {
+	    $_SESSION['20QNEXTQ'] = GetNextPrimaryQuestion();
+		    header("Location: http://difractal.com/20q");
+			exit;
+	 }
+	 
+ 
 	 $sql = "SELECT * FROM twenty_questions as t WHERE";
 	 $cnt = count($_SESSION['20Q-QUESTIONS']);
 	 $iter = 0;
@@ -19,18 +26,15 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 	  if($iter < $cnt) {
 	     $sql .= " AND";
 	  }
-	  
     }		 
 	 $sql .= "GROUP BY t.guess ORDER BY COUNT( 'guess' ) DESC";
-
-
-	 
 	 $result = mysqli_query($dbcid,$sql);
 	 $num = mysqli_num_rows($result);
 	 $guesses =  array();
+	 
 	 //Based on asked questions, get all possible guesses
 	 if($num >= 1) {
-	     echo $sql ;
+
 	 	 $row = mysqli_fetch_assoc($result);
 	     $guess = $row["guess"];
 		 $_SESSION['20QGUESS'] = $guess;
@@ -52,8 +56,14 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 			 $sql = "SELECT * FROM twenty_questions WHERE guess IN ($guesses) AND question NOT IN ($keys) ORDER BY RAND()";
 			 $result = mysqli_query($dbcid,$sql);
 			 $num = mysqli_num_rows($result);
-			 //No questions in database. Grab any unasked question now 
+
 			 if($num == 0) {
+			 
+			 		$_SESSION['20QGAMEOVER'] = true;
+					header("Location: http://difractal.com/20q");		
+					exit;
+				//No questions in database. Grab any unasked question now 
+			 /*
 			    $keys = "'" . join("', '", array_keys($_SESSION['20Q-QUESTIONS'])) . "'";
 				 $sql = "SELECT * FROM twenty_questions WHERE question NOT IN ($keys) ORDER BY RAND()";
 				 echo $sql;
@@ -76,7 +86,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 
 					   
 				 }
- 
+               */
 			} else {
 				$row = mysqli_fetch_assoc($result);
 				$nextq = $row['question'];
@@ -86,16 +96,32 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 			}
 		}
 	 } else {
-		/*$_SESSION['20QGAMEOVER'] = true;
+		$_SESSION['20QGAMEOVER'] = true;
 		header("Location: http://difractal.com/20q");		
 		echo "here!";
-		exit;	*/
+		exit;	
+		
+		/*
 		if($cnt == 20) {
 		   $_SESSION['20QGAMEOVER'] = true;
 		    header("Location: http://difractal.com/20q");
 			exit;
 		} else {
-		    
+	
+	       $result = GetGuesses2();
+		   $guesses = array();
+		   $num = mysqli_num_rows($result);
+			if($num >=1 ) {
+				 $row = mysqli_fetch_assoc($result);
+				 $guess = $row["guess"];
+				 $_SESSION['20QGUESS'] = $guess;
+				 $guesses[count($guesses)] = $row["guess"];
+				 for($i = 0; $i < $num-1; $i++) {
+					 $row = mysqli_fetch_assoc($result);
+					 $guesses[count($guesses)] = "'" . $row["guess"] . "'";		   
+				 }
+			}
+	
 			$keys = "'" . join("', '", array_keys($_SESSION['20Q-QUESTIONS'])) . "'";
 			$guesses = "'" . join("', '", $guesses) . "'";
 			 //Grab a question from possible guesses that hasn't been asked yet
@@ -134,7 +160,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
                 exit;				
 			}
         }			
-
+                 */
 	 }
 
   }
@@ -151,7 +177,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
   else if(isset($_POST['idea'])) {
 
 
-  	 $dbcid = new mysqli(..........);
+  	 $dbcid = new mysqli("localhost" , "root", "d9ded1aa-124b-4ced-92f7-3f5d9483ddf6", "difractal");
 	     $idea = $dbcid->real_escape_string($_POST['idea']);
 	 
 	 foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
@@ -167,6 +193,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
     }
     unset($_SESSION['20QGAMEOVER']);	
     unset($_SESSION['20Q-QUESTIONS']);	
+	unset($_SESSION['20Q-PRIMARYQUESTIONS']);
 	unset($_SESSION['20QNEXTQ']);	
 	unset($_SESSION['20QGUESS']);	
 	unset($_SESSION['20QCONFIRMGUESS']);	
@@ -178,10 +205,46 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 echo "Hello world!";
     unset($_SESSION['20QGAMEOVER']);	
     unset($_SESSION['20Q-QUESTIONS']);	
+    unset($_SESSION['20Q-PRIMARYQUESTIONS']);
 	unset($_SESSION['20QNEXTQ']);	
 	unset($_SESSION['20QGUESS']);	
 	unset($_SESSION['20QCONFIRMGUESS']);	
 		header("Location: http://difractal.com/20q");		
 		exit;
+		
+function GetGuesses2() {
 
+  	 $dbcid = new mysqli(..........);
+	 $sql = "SELECT * FROM twenty_questions as t WHERE";
+	 $cnt = count($_SESSION['20Q-QUESTIONS']);
+	 $iter = 0;
+
+	foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
+      $sql .= " guess IN (SELECT guess FROM twenty_questions WHERE question = '$key' AND answer = '$value') ";
+	  $iter++;
+	  if($iter < $cnt) {
+	     $sql .= " OR";
+	  }
+	  
+    }		 
+	 $sql .= "GROUP BY t.guess ORDER BY COUNT( 'guess' ) DESC";
+     
+
+	 
+	 $result = mysqli_query($dbcid,$sql);
+	 return $result;
+
+}
+
+function GetNextPrimaryQuestion() {
+	 $asked = "'" . join("', '", array_keys($_SESSION['20Q-PRIMARYQUESTIONS'])) . "'";
+  	 $dbcid = new mysqli(............);
+	 $sql = "SELECT * FROM twenty_questions WHERE priority = 1 AND question NOT IN ($asked) LIMIT 0,1";
+	 $result = mysqli_query($dbcid,$sql);
+	 $row = mysqli_fetch_assoc($result);
+	 $q = $row['question'];
+	 $cnt = count($_SESSION['20Q-PRIMARYQUESTIONS']);
+	 $_SESSION['20Q-PRIMARYQUESTIONS'][$q] = true;
+	 return $q;
+}
 ?>
