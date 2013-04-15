@@ -5,7 +5,7 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 }
   if( isset($_POST['question']) && isset($_POST['answer']) && count($_SESSION['20Q-QUESTIONS']) < 20) {
 
-	 $dbcid = new mysqli(..........);
+	 $dbcid = new mysqli(.................);
 	 $q = $dbcid->real_escape_string($_POST['question']);
 	 $a = $dbcid->real_escape_string($_POST['answer']);
 	 $_SESSION['20Q-QUESTIONS'][$q] = $a;
@@ -149,16 +149,17 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 	
   }
   else if(isset($_POST['idea'])) {
-    $idea = $dbcid->real_escape_string($_POST['idea']);
 
-  	 $dbcid = new mysqli(...............);
+
+  	 $dbcid = new mysqli(..........);
+	     $idea = $dbcid->real_escape_string($_POST['idea']);
 	 
 	 foreach($_SESSION['20Q-QUESTIONS'] as $key => $value) {
 	 
 	    $sql = "INSERT INTO twenty_questions (question,answer,guess) VALUES ('$key' , '$value' , '$idea')";
 		$result = mysqli_query($dbcid,$sql);
 	 }
-    if(isset($_POST['newq']) && isset($_POST['newans']) && strlen($_POST['newans']) > 0 ) {
+    if(isset($_POST['newq']) && isset($_POST['newans']) && strlen($_POST['newans']) > 0  && strlen($_POST['newq']) > 0) {
 	 $q = $dbcid->real_escape_string($_POST['newq']);
 	 $a = $dbcid->real_escape_string($_POST['newans']);
       $sql = "INSERT INTO twenty_questions (question,answer,guess) VALUES ('$q' , '$a' , '$idea')";     
