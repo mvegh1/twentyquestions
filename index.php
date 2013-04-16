@@ -1,6 +1,4 @@
 <?php
-require_once('/srv/www/difractal.com/public_html/template.php');
-
 if( !isset($_SESSION['20Q-QUESTIONS']) ) {
    $_SESSION['20Q-QUESTIONS'] =  array();
    $_SESSION['20Q-PRIMARYQUESTIONS'] =  array();
@@ -8,7 +6,9 @@ if( !isset($_SESSION['20Q-QUESTIONS']) ) {
 
 function GetNextPrimaryQuestion() {
 	 $asked = "'" . join("', '", array_keys($_SESSION['20Q-PRIMARYQUESTIONS'])) . "'";
-  	 $dbcid = new mysqli(..............);
+	 require_once('db.inc.php');
+  	 $dbcid = ConnectToDB();
+	 
 	 $sql = "SELECT * FROM twenty_questions WHERE priority = 1 AND question NOT IN ($asked) LIMIT 0,1";
 	 $result = mysqli_query($dbcid,$sql);
 	 $row = mysqli_fetch_assoc($result);
